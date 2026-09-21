@@ -1,0 +1,48 @@
+version: 1.0
+
+metadata:
+  name: pipeline_metadata
+  description: Contrato base para pipelines em Databricks
+
+common:
+  env: ${env}
+  write_mode: append
+  schema_mode: mergeSchema
+  use_audit_columns: true
+
+source:
+  path: null
+  catalog: null
+  schema: null
+  table: null
+  notebook: null
+  params: {}
+  column_remapping: []
+  column_transformation: []
+  filters: []
+
+quality:
+  enabled: true
+  engine: auto
+  dqx_checks: []
+
+security:
+  columns: []
+
+persist:
+  mode: delta
+  partition_by: []
+  cluster_by: []
+  primary_key: null
+  merge_key: []
+
+schema:
+  columns:
+    - name: id_pedido
+      type: string
+      nullable: false
+      description: Identificador do pedido
+    - name: id_cliente
+      type: string
+      nullable: true
+      description: Identificador do cliente

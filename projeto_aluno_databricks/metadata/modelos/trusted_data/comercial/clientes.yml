@@ -1,0 +1,65 @@
+target:
+  layer: trusted
+  catalog: trusted_data_${env}
+  schema: comercial
+  table: clientes
+  description: Clientes limpos e validados
+  write_mode: merge
+  schema_mode: null
+  partition_by:
+    - ds_regiao
+  cluster_by:
+    - id_cliente
+  use_audit_columns: true
+  primary_key: sk_cliente
+  merge_key:
+    - id_cliente
+  columns:
+    - name: sk_cliente
+      type: bigint
+      nullable: false
+      description: Chave técnica do cliente
+    - name: id_cliente
+      type: string
+      nullable: false
+      description: Identificador do cliente
+    - name: nm_cliente
+      type: string
+      nullable: false
+      description: Nome do cliente
+    - name: ds_email
+      type: string
+      nullable: true
+      description: E-mail do cliente
+    - name: ds_regiao
+      type: string
+      nullable: true
+      description: Região do cliente
+
+source:
+  catalog: raw_data_${env}
+  schema: comercial
+  table: clientes
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/clientes
+  params: {}
+  column_remapping:
+    - id_cliente: id_cliente
+    - nm_cliente: nm_cliente
+    - ds_email: ds_email
+    - ds_regiao: ds_regiao
+  column_transformation:
+    - name: nm_cliente
+      expression: init_cap(trim(nm_cliente))
+  filters:
+    - id_cliente IS NOT NULL
+
+quality:
+  enabled: true
+  engine: auto
+  dqx_checks:
+    - name: cliente_id_not_null
+      criticality: error
+      check:
+        function: is_not_null
+        arguments:
+          column: id_cliente

@@ -1,0 +1,41 @@
+target:
+  layer: raw
+  catalog: raw_data_${env}
+  schema: comercial
+  table: produtos
+  description: Dados brutos de produtos
+  write_mode: append
+  schema_mode: mergeSchema
+  partition_by: []
+  cluster_by: []
+  use_audit_columns: true
+  primary_key: id_produto
+  merge_key: []
+  columns:
+    - name: id_produto
+      type: string
+      nullable: false
+      description: Identificador do produto
+    - name: nm_produto
+      type: string
+      nullable: true
+      description: Nome do produto
+    - name: ds_categoria
+      type: string
+      nullable: true
+      description: Categoria do produto
+    - name: vl_unitario
+      type: decimal(12,2)
+      nullable: true
+      description: Valor unitário do produto
+    - name: _ingested_at
+      type: timestamp
+      nullable: true
+      description: Data e hora da ingestão
+
+source:
+  path: /Volumes/landing_data_${env}/comercial/produtos/*.csv
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/raw_data/comercial/produtos_ingestao
+  params:
+    header: true
+    inferSchema: true

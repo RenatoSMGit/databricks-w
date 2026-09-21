@@ -1,0 +1,63 @@
+target:
+  layer: trusted
+  catalog: trusted_data_${env}
+  schema: comercial
+  table: produtos
+  description: Produtos limpos e tipados
+  write_mode: merge
+  schema_mode: null
+  partition_by:
+    - ds_categoria
+  cluster_by:
+    - id_produto
+  use_audit_columns: true
+  primary_key: sk_produto
+  merge_key:
+    - id_produto
+  columns:
+    - name: sk_produto
+      type: bigint
+      nullable: false
+      description: Chave técnica do produto
+    - name: id_produto
+      type: string
+      nullable: false
+      description: Identificador do produto
+    - name: nm_produto
+      type: string
+      nullable: false
+      description: Nome do produto
+    - name: ds_categoria
+      type: string
+      nullable: true
+      description: Categoria do produto
+    - name: vl_unitario
+      type: decimal(12,2)
+      nullable: false
+      description: Valor unitário do produto
+
+source:
+  catalog: raw_data_${env}
+  schema: comercial
+  table: produtos
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/produtos
+  params: {}
+  column_remapping:
+    - id_produto: id_produto
+    - nm_produto: nm_produto
+    - ds_categoria: ds_categoria
+    - vl_unitario: vl_unitario
+  filters:
+    - id_produto IS NOT NULL
+    - vl_unitario > 0
+
+quality:
+  enabled: true
+  engine: auto
+  dqx_checks:
+    - name: produto_id_not_null
+      criticality: error
+      check:
+        function: is_not_null
+        arguments:
+          column: id_produto

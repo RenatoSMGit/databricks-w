@@ -1,0 +1,43 @@
+target:
+  layer: curated
+  catalog: curated_data_${env}
+  schema: comercial
+  table: dim_produto
+  description: Dimensão de produtos para consumo analítico
+  write_mode: overwrite
+  schema_mode: null
+  partition_by:
+    - ds_categoria
+  cluster_by:
+    - id_produto
+  use_audit_columns: true
+  primary_key: sk_produto
+  merge_key:
+    - id_produto
+  columns:
+    - name: sk_produto
+      type: bigint
+      nullable: false
+      description: Chave técnica do produto
+    - name: id_produto
+      type: string
+      nullable: false
+      description: Identificador do produto
+    - name: nm_produto
+      type: string
+      nullable: false
+      description: Nome do produto
+    - name: ds_categoria
+      type: string
+      nullable: true
+      description: Categoria do produto
+    - name: vl_unitario
+      type: decimal(12,2)
+      nullable: false
+      description: Valor unitário do produto
+
+source:
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/curated_data/comercial/dim_produto
+  params: {}
+  filters:
+    - id_produto IS NOT NULL

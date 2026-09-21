@@ -1,0 +1,43 @@
+target:
+  layer: raw
+  catalog: raw_data_${env}
+  schema: comercial
+  table: pedidos
+  description: Dados brutos de pedidos comerciais
+  write_mode: append
+  schema_mode: mergeSchema
+  partition_by:
+    - dt_ingestao
+  cluster_by: []
+  use_audit_columns: true
+  primary_key: id_pedido
+  merge_key: []
+  columns:
+    - name: id_pedido
+      type: string
+      nullable: false
+      description: Identificador do pedido
+    - name: id_cliente
+      type: string
+      nullable: true
+      description: Identificador do cliente
+    - name: dt_pedido
+      type: string
+      nullable: true
+      description: Data do pedido em origem
+    - name: vl_total
+      type: decimal(12,2)
+      nullable: true
+      description: Valor bruto do pedido
+    - name: _ingested_at
+      type: timestamp
+      nullable: true
+      description: Momento da ingestão
+
+source:
+  path: /Volumes/landing_data_${env}/comercial/pedidos/*.parquet
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/raw_data/comercial/pedidos_ingestao
+  params:
+    autoloader:
+      cloudFiles.format: parquet
+      cloudFiles.inferColumnTypes: true

@@ -1,0 +1,6 @@
+id_produto,nm_produto,ds_categoria,vl_unitario
+P001,Notebook Dell,Informatica,2500.00
+P002,Mouse Sem Fio,Informatica,80.00
+P003,Monitor 24,Informatica,900.00
+P004,Cadeira Ergonomica,Mobiliario,650.00
+P005,Impressora Laser,Informatica,1200.00

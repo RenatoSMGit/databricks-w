@@ -1,0 +1,79 @@
+target:
+  layer: trusted
+  catalog: trusted_data_${env}
+  schema: comercial
+  table: pedidos
+  description: Pedidos limpos e tipados
+  write_mode: merge
+  schema_mode: null
+  partition_by:
+    - dt_pedido
+  cluster_by:
+    - id_cliente
+  use_audit_columns: true
+  primary_key: sk_pedido
+  merge_key:
+    - id_pedido
+  columns:
+    - name: sk_pedido
+      type: bigint
+      nullable: false
+      description: Chave técnica do pedido
+    - name: id_pedido
+      type: string
+      nullable: false
+      description: Identificador do pedido
+    - name: id_cliente
+      type: string
+      nullable: false
+      description: Identificador do cliente
+    - name: dt_pedido
+      type: date
+      nullable: false
+      description: Data do pedido
+    - name: vl_total
+      type: decimal(12,2)
+      nullable: true
+      description: Valor total do pedido
+    - name: status_pedido
+      type: string
+      nullable: true
+      description: Status padronizado
+
+source:
+  catalog: raw_data_${env}
+  schema: comercial
+  table: pedidos
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/pedidos
+  params: {}
+  column_remapping:
+    - id_pedido: id_pedido
+    - id_cliente: id_cliente
+    - vl_total: vl_total
+    - status: status_pedido
+  column_transformation:
+    - name: dt_pedido
+      expression: to_date(dt_pedido, 'yyyy-MM-dd')
+    - name: status_pedido
+      expression: upper(trim(status))
+  filters:
+    - id_pedido IS NOT NULL
+    - id_cliente IS NOT NULL
+    - vl_total >= 0
+
+quality:
+  enabled: true
+  engine: auto
+  dqx_checks:
+    - name: pedido_id_not_null
+      criticality: error
+      check:
+        function: is_not_null
+        arguments:
+          column: id_pedido
+    - name: valor_nao_negativo
+      criticality: error
+      check:
+        function: is_not_null
+        arguments:
+          column: vl_total

@@ -1,0 +1,43 @@
+target:
+  layer: curated
+  catalog: curated_data_${env}
+  schema: comercial
+  table: dim_cliente
+  description: Dimensão de clientes para consumo analítico
+  write_mode: overwrite
+  schema_mode: null
+  partition_by:
+    - ds_regiao
+  cluster_by:
+    - id_cliente
+  use_audit_columns: true
+  primary_key: sk_cliente
+  merge_key:
+    - id_cliente
+  columns:
+    - name: sk_cliente
+      type: bigint
+      nullable: false
+      description: Chave técnica do cliente
+    - name: id_cliente
+      type: string
+      nullable: false
+      description: Identificador do cliente
+    - name: nm_cliente
+      type: string
+      nullable: false
+      description: Nome do cliente
+    - name: ds_email
+      type: string
+      nullable: true
+      description: E-mail do cliente
+    - name: ds_regiao
+      type: string
+      nullable: true
+      description: Região do cliente
+
+source:
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/curated_data/comercial/dim_cliente
+  params: {}
+  filters:
+    - id_cliente IS NOT NULL

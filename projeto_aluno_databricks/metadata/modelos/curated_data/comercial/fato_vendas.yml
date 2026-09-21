@@ -1,0 +1,63 @@
+target:
+  layer: curated
+  catalog: curated_data_${env}
+  schema: comercial
+  table: fato_vendas
+  description: Fato de vendas para consumo analítico
+  write_mode: merge
+  schema_mode: null
+  partition_by:
+    - dt_pedido
+  cluster_by:
+    - id_cliente
+  use_audit_columns: true
+  primary_key: sk_venda
+  merge_key:
+    - id_pedido
+  columns:
+    - name: sk_venda
+      type: bigint
+      nullable: false
+      description: Chave técnica da venda
+    - name: id_pedido
+      type: string
+      nullable: false
+      description: Identificador do pedido
+    - name: id_cliente
+      type: string
+      nullable: false
+      description: Identificador do cliente
+    - name: id_produto
+      type: string
+      nullable: false
+      description: Identificador do produto
+    - name: dt_pedido
+      type: date
+      nullable: false
+      description: Data do pedido
+    - name: vl_bruto
+      type: decimal(18,2)
+      nullable: true
+      description: Valor bruto do pedido
+    - name: vl_desconto
+      type: decimal(18,2)
+      nullable: true
+      description: Desconto aplicado
+    - name: vl_liquido
+      type: decimal(18,2)
+      nullable: false
+      description: Valor líquido do pedido
+    - name: status_pedido
+      type: string
+      nullable: true
+      description: Status do pedido
+    - name: ds_regiao
+      type: string
+      nullable: true
+      description: Região do cliente
+
+source:
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/curated_data/comercial/fato_vendas
+  params: {}
+  filters:
+    - id_pedido IS NOT NULL

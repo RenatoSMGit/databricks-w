@@ -1,0 +1,45 @@
+target:
+  layer: raw
+  catalog: raw_data_${env}
+  schema: comercial
+  table: clientes
+  description: Dados brutos de clientes
+  write_mode: append
+  schema_mode: mergeSchema
+  partition_by: []
+  cluster_by: []
+  use_audit_columns: true
+  primary_key: id_cliente
+  merge_key: []
+  columns:
+    - name: id_cliente
+      type: string
+      nullable: false
+      description: Identificador do cliente
+    - name: nm_cliente
+      type: string
+      nullable: true
+      description: Nome do cliente
+    - name: ds_email
+      type: string
+      nullable: true
+      description: E-mail do cliente
+    - name: nu_telefone
+      type: string
+      nullable: true
+      description: Telefone do cliente
+    - name: ds_regiao
+      type: string
+      nullable: true
+      description: Região do cliente
+    - name: _ingested_at
+      type: timestamp
+      nullable: true
+      description: Data e hora da ingestão
+
+source:
+  path: /Volumes/landing_data_${env}/comercial/clientes/*.csv
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/raw_data/comercial/clientes_ingestao
+  params:
+    header: true
+    inferSchema: true

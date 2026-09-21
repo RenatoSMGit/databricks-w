@@ -1,0 +1,6 @@
+id_cliente,nm_cliente,ds_email,nu_telefone,ds_regiao
+C001,João Silva,joao.silva@email.com,11999990001,Sudeste
+C002,Maria Souza,maria.souza@email.com,11999990002,Centro-Oeste
+C003,Pedro Lima,pedro.lima@email.com,21999990003,Sudeste
+C004,Ana Costa,ana.costa@email.com,31999990004,Sul
+C005,Carlos Rocha,carlos.rocha@email.com,41999990005,Nordeste

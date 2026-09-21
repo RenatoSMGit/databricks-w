@@ -1,0 +1,50 @@
+target:
+  layer: refined
+  catalog: refined_data_${env}
+  schema: comercial
+  table: kpi_vendas_diarias
+  description: Indicadores diários de vendas
+  write_mode: merge
+  schema_mode: null
+  partition_by:
+    - dt_venda
+  cluster_by:
+    - id_cliente
+  use_audit_columns: true
+  primary_key: sk_kpi
+  merge_key:
+    - dt_venda
+    - id_cliente
+  columns:
+    - name: sk_kpi
+      type: bigint
+      nullable: false
+      description: Chave técnica do indicador
+    - name: dt_venda
+      type: date
+      nullable: false
+      description: Data da venda
+    - name: id_cliente
+      type: string
+      nullable: false
+      description: Cliente relacionado
+    - name: qt_pedidos
+      type: bigint
+      nullable: false
+      description: Quantidade de pedidos
+    - name: vl_vendas
+      type: decimal(18,2)
+      nullable: false
+      description: Valor total vendido
+
+source:
+  notebook: /Workspace/Users/<usuario>/projeto_aluno_databricks/notebooks/custom/refined_data/comercial/kpi_vendas_diarias
+  params:
+    janela_dias: 30
+  column_remapping:
+    - dt_pedido: dt_venda
+    - id_cliente: id_cliente
+    - quantidade_pedidos: qt_pedidos
+    - valor_vendas: vl_vendas
+  filters:
+    - dt_pedido IS NOT NULL
