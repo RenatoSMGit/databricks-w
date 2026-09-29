@@ -1,0 +1,83 @@
+resources:
+  jobs:
+    pipeline_comercial:
+      name: pipeline-comercial-${bundle.target}
+      max_concurrent_runs: 1
+      environments:
+        - environment_key: serverless_default
+          spec:
+            environment_version: "5"
+      tasks:
+        - task_key: raw_clientes
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/raw_data/comercial/clientes_ingestao.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: raw_produtos
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/raw_data/comercial/produtos_ingestao.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: raw_pedidos
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/raw_data/comercial/pedidos_ingestao.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: trusted_clientes
+          depends_on:
+            - task_key: raw_clientes
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/clientes.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: trusted_produtos
+          depends_on:
+            - task_key: raw_produtos
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/produtos.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: trusted_pedidos
+          depends_on:
+            - task_key: raw_pedidos
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/pedidos.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: refined_kpi_vendas_diarias
+          depends_on:
+            - task_key: trusted_pedidos
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/refined_data/comercial/kpi_vendas_diarias.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: curated_dim_cliente
+          depends_on:
+            - task_key: trusted_clientes
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/curated_data/comercial/dim_cliente.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: curated_dim_produto
+          depends_on:
+            - task_key: trusted_produtos
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/curated_data/comercial/dim_produto.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: curated_fato_vendas
+          depends_on:
+            - task_key: trusted_pedidos
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/custom/curated_data/comercial/fato_vendas.py
+            source: WORKSPACE
+          environment_key: serverless_default

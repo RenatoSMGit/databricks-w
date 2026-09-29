@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/**"
+      - ".github/workflows/executar_databricks.yml"
       - "projeto_aluno_databricks/notebooks/**"
       - "projeto_aluno_databricks/metadata/**"
 

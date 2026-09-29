@@ -1,0 +1,15 @@
+resources:
+  jobs:
+    ola_mundo:
+      name: ola-mundo-${bundle.target}
+      max_concurrent_runs: 1
+      environments:
+        - environment_key: serverless_default
+          spec:
+            environment_version: "5"
+      tasks:
+        - task_key: imprimir_ola_mundo
+          spark_python_task:
+            python_file: ../projeto_aluno_databricks/notebooks/test/ola_mundo.py
+            source: WORKSPACE
+          environment_key: serverless_default

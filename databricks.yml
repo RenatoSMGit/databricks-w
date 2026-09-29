@@ -1,0 +1,21 @@
+bundle:
+  name: projeto_aluno_databricks
+
+include:
+  - resources/*.yml
+
+sync:
+  include:
+    - projeto_aluno_databricks/notebooks/custom/**/*.py
+    - projeto_aluno_databricks/notebooks/test/**/*.py
+
+variables:
+  databricks_host:
+    description: URL do workspace Databricks configurada no GitHub
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: ${var.databricks_host}
