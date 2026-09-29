@@ -45,12 +45,3 @@ jobs:
                   yaml.safe_load(stream)
               print(f"OK: {file}")
           PY
-        
-      - name: Proxima etapa
-        run: echo "Validação concluída com sucesso!"
-  
-  AWS-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Baixar codigo
-        uses: actions/checkout@v4
