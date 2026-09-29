@@ -62,7 +62,7 @@ As tasks Raw independentes podem iniciar em paralelo. Cada task Trusted espera a
 3. Crie a variavel `DATABRICKS_HOST` com somente a origem do workspace, por exemplo `https://dbc-exemplo.cloud.databricks.com`. Nao inclua `?o=...`.
 4. Crie o secret `DATABRICKS_TOKEN` e cole o PAT. Nao adicione `Bearer`, aspas ou espacos extras.
 
-O Bundle recebe o host por `BUNDLE_VAR_databricks_host`; a CLI recebe a credencial por `DATABRICKS_TOKEN`. O valor do token nao deve aparecer em logs nem neste guia.
+O Bundle/CLI recebem o host pela variavel de ambiente `DATABRICKS_HOST`; a CLI recebe a credencial por `DATABRICKS_TOKEN`. O valor do token nao deve aparecer em logs nem neste guia.
 
 Se o workspace nao permitir gerar ou usar PAT, pare e consulte o administrador/professor. Nao tente contornar as regras de autenticacao do workspace.
 
