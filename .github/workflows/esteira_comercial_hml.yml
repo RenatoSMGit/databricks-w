@@ -1,0 +1,36 @@
+name: Esteira comercial (branch hml)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [hml]
+    paths:
+      - "databricks.yml"
+      - "resources/pipeline_comercial.yml"
+      - "projeto_aluno_databricks/notebooks/custom/**/*.py"
+      - ".github/workflows/esteira_comercial_hml.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  esteira-comercial:
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validar Bundle
+        run: databricks bundle validate -t dev
+
+      - name: Criar ou atualizar Job comercial
+        run: databricks bundle deploy -t dev
+
+      - name: Executar esteira comercial
+        run: databricks bundle run pipeline_comercial -t dev
