@@ -95,7 +95,7 @@ Abra `.github/workflows/criar_job_databricks.yml`:
 - `databricks bundle run pipeline_comercial -t dev` espera a conclusao do Job; falha se uma task falhar.
 - A etapa final escreve o resultado de cada fase no resumo da execucao do GitHub.
 
-Na pagina do run do GitHub, cada fase aparece como uma etapa expansivel. O resumo final continua visivel mesmo quando uma etapa anterior falha, indicando `success`, `failure` ou `skipped`.
+Na pagina do run do GitHub, as fases aparecem como cinco quadrados conectados no grafo: validar, publicar, confirmar o Job, executar e resumir. Clique em cada quadrado para ver os logs. O resumo final continua visivel mesmo quando uma fase anterior falha, indicando `success`, `failure` ou `skipped`.
 
 ## 7. Publicar pelo GitHub
 

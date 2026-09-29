@@ -14,7 +14,8 @@ permissions:
   contents: read
 
 jobs:
-  esteira-comercial:
+  validar:
+    name: "1. Validar Bundle"
     runs-on: ubuntu-latest
     env:
       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
@@ -26,29 +27,72 @@ jobs:
       - name: Instalar Databricks CLI
         uses: databricks/setup-cli@main
 
-      - name: "1. Validar definicao da esteira"
-        id: validate_bundle
+      - name: Validar definicao da esteira
         run: databricks bundle validate -t dev
 
-      - name: "2. Criar ou atualizar Job comercial"
-        id: deploy_bundle
+  publicar:
+    name: "2. Criar ou atualizar Job"
+    needs: validar
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Publicar definicao do Job
         run: databricks bundle deploy -t dev
 
-      - name: "3. Validar Job publicado e mostrar link"
-        id: verify_deployment
+  verificar:
+    name: "3. Confirmar Job publicado"
+    needs: publicar
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Exibir Job e link do workspace
         run: databricks bundle summary -t dev
 
-      - name: "4. Executar esteira comercial por etapas"
-        id: run_pipeline
+  executar:
+    name: "4. Executar esteira comercial"
+    needs: verificar
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Executar as tasks na ordem da DAG
         run: databricks bundle run pipeline_comercial -t dev
 
-      - name: "5. Resumo visual da execucao"
-        if: always()
-        env:
-          VALIDATE_RESULT: ${{ steps.validate_bundle.outcome }}
-          DEPLOY_RESULT: ${{ steps.deploy_bundle.outcome }}
-          VERIFY_RESULT: ${{ steps.verify_deployment.outcome }}
-          RUN_RESULT: ${{ steps.run_pipeline.outcome }}
+  resumo:
+    name: "5. Resumo visual"
+    if: always()
+    needs: [validar, publicar, verificar, executar]
+    runs-on: ubuntu-latest
+    env:
+      VALIDATE_RESULT: ${{ needs.validar.result }}
+      DEPLOY_RESULT: ${{ needs.publicar.result }}
+      VERIFY_RESULT: ${{ needs.verificar.result }}
+      RUN_RESULT: ${{ needs.executar.result }}
+    steps:
+      - name: Mostrar resultado de cada quadrado
         run: |
           {
             echo "## Resultado da esteira comercial"
