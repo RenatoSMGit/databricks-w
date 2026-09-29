@@ -47,7 +47,10 @@ jobs:
           PY
         
       - name: Proxima etapa
-        run: print("Validação concluída com sucesso. Próxima etapa do pipeline pode prosseguir.")
+        run: |
+          python - <<'PY'
+                print("Validacao concluida com sucesso!")
+          PY
   
   AWS-check:
     runs-on: ubuntu-latest
