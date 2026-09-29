@@ -6,7 +6,7 @@ on:
     branches: [hml]
     paths:
       - "databricks.yml"
-      - "resources/pipeline_comercial.yml"
+      - "projeto_aluno_databricks/workflows/*.yml"
       - "projeto_aluno_databricks/notebooks/custom/**/*.py"
       - ".github/workflows/esteira_comercial_hml.yml"
 

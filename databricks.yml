@@ -2,7 +2,7 @@ bundle:
   name: projeto_aluno_databricks
 
 include:
-  - resources/*.yml
+  - projeto_aluno_databricks/workflows/*.yml
 
 sync:
   include:

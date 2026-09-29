@@ -10,19 +10,19 @@ resources:
       tasks:
         - task_key: raw_clientes
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/raw_data/comercial/clientes_ingestao.py
+            python_file: ../notebooks/custom/raw_data/comercial/clientes_ingestao.py
             source: WORKSPACE
           environment_key: serverless_default
 
         - task_key: raw_produtos
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/raw_data/comercial/produtos_ingestao.py
+            python_file: ../notebooks/custom/raw_data/comercial/produtos_ingestao.py
             source: WORKSPACE
           environment_key: serverless_default
 
         - task_key: raw_pedidos
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/raw_data/comercial/pedidos_ingestao.py
+            python_file: ../notebooks/custom/raw_data/comercial/pedidos_ingestao.py
             source: WORKSPACE
           environment_key: serverless_default
 
@@ -30,7 +30,7 @@ resources:
           depends_on:
             - task_key: raw_clientes
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/clientes.py
+            python_file: ../notebooks/custom/trusted_data/comercial/clientes.py
             source: WORKSPACE
           environment_key: serverless_default
 
@@ -38,7 +38,7 @@ resources:
           depends_on:
             - task_key: raw_produtos
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/produtos.py
+            python_file: ../notebooks/custom/trusted_data/comercial/produtos.py
             source: WORKSPACE
           environment_key: serverless_default
 
@@ -46,7 +46,7 @@ resources:
           depends_on:
             - task_key: raw_pedidos
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/trusted_data/comercial/pedidos.py
+            python_file: ../notebooks/custom/trusted_data/comercial/pedidos.py
             source: WORKSPACE
           environment_key: serverless_default
 
@@ -54,7 +54,7 @@ resources:
           depends_on:
             - task_key: trusted_pedidos
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/refined_data/comercial/kpi_vendas_diarias.py
+            python_file: ../notebooks/custom/refined_data/comercial/kpi_vendas_diarias.py
             source: WORKSPACE
           environment_key: serverless_default
 
@@ -62,7 +62,7 @@ resources:
           depends_on:
             - task_key: trusted_clientes
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/curated_data/comercial/dim_cliente.py
+            python_file: ../notebooks/custom/curated_data/comercial/dim_cliente.py
             source: WORKSPACE
           environment_key: serverless_default
 
@@ -70,7 +70,7 @@ resources:
           depends_on:
             - task_key: trusted_produtos
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/curated_data/comercial/dim_produto.py
+            python_file: ../notebooks/custom/curated_data/comercial/dim_produto.py
             source: WORKSPACE
           environment_key: serverless_default
 
@@ -78,6 +78,6 @@ resources:
           depends_on:
             - task_key: trusted_pedidos
           spark_python_task:
-            python_file: ../projeto_aluno_databricks/notebooks/custom/curated_data/comercial/fato_vendas.py
+            python_file: ../notebooks/custom/curated_data/comercial/fato_vendas.py
             source: WORKSPACE
           environment_key: serverless_default

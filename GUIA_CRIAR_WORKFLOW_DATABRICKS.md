@@ -15,7 +15,7 @@ O fluxo HML valida a definicao, cria/atualiza o Job comercial, mostra os detalhe
 ## 1. Entender o fluxo
 
 ```text
-push para main ou execucao manual
+push para hml ou execucao manual
     -> GitHub baixa o repositorio e instala a Databricks CLI
     -> bundle validate confere a definicao
     -> bundle deploy cria ou atualiza o Job no workspace
@@ -38,14 +38,15 @@ Este repositorio tem workflows separados para a validacao inicial, para o Job Ol
 
 ## 3. Conhecer os arquivos
 
-O Bundle tem a configuracao principal na raiz:
+O Bundle tem a configuracao principal na raiz e guarda os Jobs dentro do projeto do aluno:
 
 ```text
 databricks.yml
-resources/pipeline_comercial.yml
+projeto_aluno_databricks/workflows/pipeline_comercial.yml
+projeto_aluno_databricks/workflows/templates/template_job.yml
 ```
 
-`databricks.yml` nomeia o Bundle, inclui a definicao do recurso e determina o alvo `dev`. `resources/pipeline_comercial.yml` define o Job, suas tasks, o compute serverless e a ordem de dependencias.
+`databricks.yml` nomeia o Bundle, inclui os arquivos YAML de primeiro nivel em `projeto_aluno_databricks/workflows/` e determina o alvo `dev`. `pipeline_comercial.yml` define o Job, suas tasks, o compute serverless e a ordem de dependencias. O arquivo dentro de `workflows/templates/` e um modelo generico e nao e implantado.
 
 O Job cobre os scripts existentes:
 
@@ -70,7 +71,7 @@ Se o workspace nao permitir gerar ou usar PAT, pare e consulte o administrador/p
 
 ## 5. Revisar a definicao do Job
 
-Abra `resources/pipeline_comercial.yml` e localize:
+Abra `projeto_aluno_databricks/workflows/pipeline_comercial.yml` e localize:
 
 - `resources.jobs.pipeline_comercial`: a chave que identifica o recurso no Bundle.
 - `name`: o nome que aparece em Jobs & Pipelines.
@@ -80,17 +81,19 @@ Abra `resources/pipeline_comercial.yml` e localize:
 - `environment_key` e `environments`: selecionam o ambiente serverless. Python e PySpark fazem parte do ambiente base; nao instale PySpark como dependencia do ambiente serverless.
 - `max_concurrent_runs: 1`: evita duas execucoes do mesmo Job ao mesmo tempo.
 
-Os caminhos dos scripts sao relativos ao arquivo `resources/pipeline_comercial.yml`. O Bundle sincroniza os arquivos Python de `projeto_aluno_databricks/notebooks/custom/` para o workspace no deploy.
+Os caminhos dos scripts sao relativos ao arquivo `projeto_aluno_databricks/workflows/pipeline_comercial.yml`. O Bundle sincroniza os arquivos Python de `projeto_aluno_databricks/notebooks/custom/` para o workspace no deploy.
+
+Para criar outro Job, copie `projeto_aluno_databricks/workflows/templates/template_job.yml` para um novo arquivo diretamente em `projeto_aluno_databricks/workflows/`, troque a chave do recurso, o nome, as tasks e seus caminhos. O `include` do Bundle carrega esses YAMLs de primeiro nivel e ignora a pasta `templates/`.
 
 ## 6. Revisar a GitHub Action
 
-Abra `.github/workflows/criar_job_databricks.yml`:
+Abra `.github/workflows/esteira_comercial_hml.yml`:
 
 - `workflow_dispatch` permite iniciar o deploy manualmente.
-- `push` inicia o deploy quando mudam o Bundle, os scripts Python incluidos ou o proprio workflow, desde que o push chegue a `main`.
+- `push` inicia o deploy quando mudam o Bundle, as definicoes em `projeto_aluno_databricks/workflows/`, os scripts Python incluidos ou o proprio workflow, desde que o push chegue a `hml`.
 - `actions/checkout` baixa os arquivos locais necessarios pelo Bundle.
 - `databricks bundle validate -t dev` valida a configuracao antes da publicacao.
-- `databricks bundle deploy -t dev` cria ou atualiza o Job `pipeline_comercial` no workspace.
+- `databricks bundle deploy -t dev` cria ou atualiza os Jobs definidos em `projeto_aluno_databricks/workflows/` no workspace.
 - `databricks bundle summary -t dev` confirma o recurso publicado e exibe o link para o Job.
 - `databricks bundle run pipeline_comercial -t dev` espera a conclusao do Job; falha se uma task falhar.
 - A etapa final escreve o resultado de cada fase no resumo da execucao do GitHub.
@@ -109,7 +112,7 @@ git diff
 Adicione e envie os arquivos novos:
 
 ```bash
-git add databricks.yml resources/pipeline_comercial.yml .github/workflows/esteira_comercial_hml.yml GUIA_CRIAR_WORKFLOW_DATABRICKS.md projeto_aluno_databricks/notebooks/custom
+git add databricks.yml projeto_aluno_databricks/workflows .github/workflows/esteira_comercial_hml.yml GUIA_CRIAR_WORKFLOW_DATABRICKS.md projeto_aluno_databricks/notebooks/custom
 git commit -m "Define Job Databricks como Bundle"
 git push -u origin NOME_DA_BRANCH
 ```
@@ -139,7 +142,7 @@ Antes de executar, confirme que as tabelas e volumes usados pelo projeto existem
 
 ## 10. Exercicio
 
-1. Altere o nome do Job ou adicione uma descricao em `resources/pipeline_comercial.yml`.
+1. Copie `projeto_aluno_databricks/workflows/templates/template_job.yml` para `projeto_aluno_databricks/workflows/` e personalize o Job.
 2. Envie a alteracao para uma branch e abra um pull request.
 3. Faca merge para `hml` e observe as etapas numeradas e o resumo visual no GitHub Actions.
 4. No Databricks, abra o Job pelo link do resumo e confira o estado das tasks na DAG.
