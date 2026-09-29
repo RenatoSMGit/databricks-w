@@ -1,0 +1,26 @@
+name: Executar Job Databricks
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "projeto_aluno_databricks/notebooks/**"
+      - "projeto_aluno_databricks/metadata/**"
+
+permissions:
+  contents: read
+
+jobs:
+  executar-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Executar Job
+        env:
+          DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          JOB_ID: ${{ vars.DATABRICKS_JOB_ID }}
+        run: databricks jobs run-now "$JOB_ID"
