@@ -15,6 +15,6 @@ df = pedidos.select(
 
 df = df.withColumn('sk_venda', F.monotonically_increasing_id())
 
-df.write.mode('merge').format('delta').saveAsTable('curated_data_dev.comercial.fato_vendas')
+df.write.mode('overwrite').format('delta').saveAsTable('curated_data_dev.comercial.fato_vendas')
 
 print('Curated concluído.')

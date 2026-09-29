@@ -2,7 +2,7 @@
 
 Este roteiro demonstra como criar e manter um Job Databricks como configuracao versionada. O Databricks Asset Bundle (Declarative Automation Bundle) descreve o Job; o GitHub Actions valida e faz o deploy.
 
-> Este fluxo cria ou atualiza o Job, mas nao inicia suas tasks. Depois do deploy, o aluno pode revisar o Job e escolher **Run now** no Databricks.
+O fluxo HML valida a definicao, cria/atualiza o Job comercial, mostra os detalhes do recurso, executa a DAG e publica um resumo visual no GitHub Actions.
 
 ## Objetivos
 
@@ -19,12 +19,14 @@ push para main ou execucao manual
     -> GitHub baixa o repositorio e instala a Databricks CLI
     -> bundle validate confere a definicao
     -> bundle deploy cria ou atualiza o Job no workspace
-    -> aluno revisa e inicia o Job no Databricks
+    -> CLI mostra o Job publicado
+    -> Databricks executa as tasks pela DAG
+    -> GitHub publica o resultado de cada fase
 ```
 
 GitHub Actions e o orquestrador de CI/CD. Lakeflow Job e o recurso Databricks com as tasks e suas dependencias. Um Bundle descreve esse recurso em arquivos versionados para que o deploy possa ser repetido sem criar um Job novo a cada execucao.
 
-Este repositorio tambem tem `executar_databricks.yml`, que chama um Job existente pelo ID. A action `criar_job_databricks.yml` e separada: ela publica o Job definido no Bundle e nao executa o Job antigo.
+Este repositorio tem workflows separados para a validacao inicial, para o Job Ola Mundo e para a esteira comercial da branch `hml`. O workflow HML abaixo executa apenas o recurso `pipeline_comercial` do Bundle.
 
 ## 2. Pre-requisitos
 
@@ -89,8 +91,11 @@ Abra `.github/workflows/criar_job_databricks.yml`:
 - `actions/checkout` baixa os arquivos locais necessarios pelo Bundle.
 - `databricks bundle validate -t dev` valida a configuracao antes da publicacao.
 - `databricks bundle deploy -t dev` cria ou atualiza o Job `pipeline_comercial` no workspace.
+- `databricks bundle summary -t dev` confirma o recurso publicado e exibe o link para o Job.
+- `databricks bundle run pipeline_comercial -t dev` espera a conclusao do Job; falha se uma task falhar.
+- A etapa final escreve o resultado de cada fase no resumo da execucao do GitHub.
 
-Depois do deploy, a Action executa `databricks bundle run ola_mundo -t dev`. Um check verde confirma a execucao do Job simples `ola_mundo`; nao significa que as tasks do pipeline comercial processaram dados.
+Na pagina do run do GitHub, cada fase aparece como uma etapa expansivel. O resumo final continua visivel mesmo quando uma etapa anterior falha, indicando `success`, `failure` ou `skipped`.
 
 ## 7. Publicar pelo GitHub
 
@@ -104,41 +109,41 @@ git diff
 Adicione e envie os arquivos novos:
 
 ```bash
-git add databricks.yml resources/pipeline_comercial.yml .github/workflows/criar_job_databricks.yml GUIA_CRIAR_WORKFLOW_DATABRICKS.md
+git add databricks.yml resources/pipeline_comercial.yml .github/workflows/esteira_comercial_hml.yml GUIA_CRIAR_WORKFLOW_DATABRICKS.md projeto_aluno_databricks/notebooks/custom
 git commit -m "Define Job Databricks como Bundle"
 git push -u origin NOME_DA_BRANCH
 ```
 
-Faca merge da branch para `main`. A Action sera disparada pelo push de merge. Para testar sem fazer um novo commit, use **Actions → Criar ou atualizar Job Databricks → Run workflow** e selecione `main`.
+Abra um pull request com destino a `hml` e faca o merge. A action **Esteira comercial (branch hml)** sera disparada pelo push nessa branch. Para testar manualmente, abra essa action em **Actions → Run workflow** e selecione `hml`.
 
 ## 8. Conferir o resultado
 
 1. No GitHub, abra a execucao da Action.
-2. Confirme que **Validar definicao do Job**, **Criar ou atualizar Job no workspace** e **Executar Job Ola Mundo** terminaram sem erro.
-3. No workspace Databricks, abra **Jobs & Pipelines** e procure `ola-mundo-dev` ou o nome com prefixo de desenvolvimento.
-4. Abra a execucao de Ola Mundo e confira a saida `Ola, mundo!` nos logs da task.
-5. O Job comercial tambem e criado/atualizado pelo Bundle, mas nao e executado por esta Action. Revise caminhos, tabelas e permissoes antes de inicia-lo manualmente.
+2. Confira as etapas numeradas e expanda cada uma para ver seus logs.
+3. Abra o resumo visual no final do run e confira o resultado de cada fase.
+4. Use o link impresso por `bundle summary` para abrir o Job no Databricks.
+5. Na aba de execucoes do Job, abra a DAG e confira o resultado de cada task.
 
 Se usar outra identidade para deploy, o Bundle pode criar outro estado/Job de desenvolvimento. Para esta aula, use o mesmo usuario e o mesmo alvo `dev` em deploys sucessivos.
 
 ## 9. Diagnosticar falhas
 
-- **A Action nao aparece:** confira se os arquivos estao na branch `main`, nos caminhos em `paths`, e dentro de `.github/workflows/`.
+- **A Action nao aparece:** confira se os arquivos estao na branch `hml`, nos caminhos em `paths`, e dentro de `.github/workflows/`.
 - **Credenciais ausentes:** confira `DATABRICKS_HOST` em Variables e `DATABRICKS_TOKEN` em Secrets, usando exatamente esses nomes.
 - **Token rejeitado:** gere um PAT para o workspace correto e atualize o secret; nao imprima o valor para depurar.
 - **Sem permissao para criar/editar Job:** a identidade do PAT precisa ter as permissoes de workspace necessarias.
 - **`bundle validate` falha:** leia o primeiro erro de schema e confira indentacao, caminho do script, nomes de `task_key` e dependencias.
-- **Deploy passou, mas Run now falha:** isso e um erro das tasks, nao do deploy. Abra os logs da task no Databricks.
+- **Deploy passou, mas a execucao da esteira falha:** isso e um erro de uma task, nao do deploy. Abra o Job pelo link do `bundle summary` e veja o log da primeira task com falha.
 
-Validar e publicar o Bundle nao executa os scripts. Antes da primeira execucao, revise a logica Python e confirme que as tabelas e volumes usados pelo projeto existem. Por exemplo, `pedidos_ingestao.py` usa `F.current_timestamp()` sem importar `functions as F`; ha tambem scripts com `.write.mode('merge')`, modo que deve ser revisto para a API Delta usada pelo projeto.
+Antes de executar, confirme que as tabelas e volumes usados pelo projeto existem e que os dados de entrada estao corretos. As tabelas Trusted, Refined e a fato Curated sao reconstruidas com `overwrite` em cada execucao; isso evita o uso de `mode('merge')`, que nao e suportado por `DataFrameWriter.mode`.
 
 ## 10. Exercicio
 
 1. Altere o nome do Job ou adicione uma descricao em `resources/pipeline_comercial.yml`.
 2. Envie a alteracao para uma branch e abra um pull request.
-3. Faca merge para `main` e observe a validacao e o deploy.
-4. No Databricks, confirme que o mesmo Job foi atualizado em vez de aparecer uma copia para cada deploy.
-5. Identifique qual parte executa as tasks e explique por que o deploy, sozinho, nao processa os dados.
+3. Faca merge para `hml` e observe as etapas numeradas e o resumo visual no GitHub Actions.
+4. No Databricks, abra o Job pelo link do resumo e confira o estado das tasks na DAG.
+5. Identifique as fases de validacao, deploy e execucao e explique o resultado de cada uma.
 
 ## Referencias
 

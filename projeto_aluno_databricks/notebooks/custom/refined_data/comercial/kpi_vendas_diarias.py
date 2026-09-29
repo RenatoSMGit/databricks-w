@@ -12,6 +12,6 @@ df = pedidos.groupBy(F.to_date('dt_pedido').alias('dt_venda'), 'id_cliente').agg
 
 df = df.withColumn('sk_kpi', F.monotonically_increasing_id())
 
-df.write.mode('merge').format('delta').saveAsTable('refined_data_dev.comercial.kpi_vendas_diarias')
+df.write.mode('overwrite').format('delta').saveAsTable('refined_data_dev.comercial.kpi_vendas_diarias')
 
 print('Refined concluído.')
