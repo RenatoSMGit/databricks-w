@@ -1,4 +1,4 @@
-# Projeto-base do aluno: Databricks + Lakehouse
+# Projeto-base do aluno: Databricks + Lakehouse 
 
 Este projeto reproduz a estrutura de referência para um pipeline de dados no Databricks usando arquitetura em camadas, Unity Catalog, Delta Lake e metadados YAML.
 
