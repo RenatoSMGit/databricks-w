@@ -10,4 +10,4 @@ df = df.withColumn('sk_cliente', F.monotonically_increasing_id())
 
 df.write.mode('overwrite').format('delta').saveAsTable('trusted_data_dev.comercial.clientes')
 
-print('Tabela trusted_data_dev.comercial.clientes criada com sucesso.')
+print('Tabela trusted_data_dev.comercial.clientes criada com sucesso...')

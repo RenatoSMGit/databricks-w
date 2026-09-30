@@ -1,37 +1,37 @@
-name: Criar ou atualizar Job Databricks
+# name: Criar ou atualizar Job Databricks
 
-on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "databricks.yml"
-      - "resources/*.yml"
-      - "projeto_aluno_databricks/notebooks/test/**/*.py"
-      - "projeto_aluno_databricks/notebooks/custom/**/*.py"
-      - ".github/workflows/criar_job_databricks.yml"
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches: [main]
+#     paths:
+#       - "databricks.yml"
+#       - "resources/*.yml"
+#       - "projeto_aluno_databricks/notebooks/test/**/*.py"
+#       - "projeto_aluno_databricks/notebooks/custom/**/*.py"
+#       - ".github/workflows/criar_job_databricks.yml"
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    env:
-      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-    steps:
-      - name: Baixar codigo
-        uses: actions/checkout@v4
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     env:
+#       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+#       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+#     steps:
+#       - name: Baixar codigo
+#         uses: actions/checkout@v4
 
-      - name: Instalar Databricks CLI
-        uses: databricks/setup-cli@main
+#       - name: Instalar Databricks CLI
+#         uses: databricks/setup-cli@main
 
-      - name: Validar definicao do Job
-        run: databricks bundle validate -t dev
+#       - name: Validar definicao do Job
+#         run: databricks bundle validate -t dev
 
-      - name: Criar ou atualizar Job no workspace
-        run: databricks bundle deploy -t dev
+#       - name: Criar ou atualizar Job no workspace
+#         run: databricks bundle deploy -t dev
 
-      - name: Executar Job Ola Mundo
-        run: databricks bundle run ola_mundo -t dev
+#       - name: Executar Job Ola Mundo
+#         run: databricks bundle run ola_mundo -t dev

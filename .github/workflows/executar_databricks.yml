@@ -1,27 +1,27 @@
-name: Executar Job Databricks
+# name: Executar Job Databricks
 
-on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/executar_databricks.yml"
-      - "projeto_aluno_databricks/notebooks/**"
-      - "projeto_aluno_databricks/metadata/**"
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches: [main]
+#     paths:
+#       - ".github/workflows/executar_databricks.yml"
+#       - "projeto_aluno_databricks/notebooks/**"
+#       - "projeto_aluno_databricks/metadata/**"
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
-  executar-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Instalar Databricks CLI
-        uses: databricks/setup-cli@main
+# jobs:
+#   executar-job:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Instalar Databricks CLI
+#         uses: databricks/setup-cli@main
 
-      - name: Executar Job
-        env:
-          DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          JOB_ID: 312724880725806
-        run: databricks jobs run-now "$JOB_ID"
+#       - name: Executar Job
+#         env:
+#           DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+#           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+#           JOB_ID: 312724880725806
+#         run: databricks jobs run-now "$JOB_ID"
