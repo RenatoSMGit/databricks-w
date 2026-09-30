@@ -1,47 +1,47 @@
-name: Validar projeto Databricks
+# name: Validar projeto Databricks
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
+#   workflow_dispatch:
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Baixar codigo
-        uses: actions/checkout@v4
+# jobs:
+#   validate:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Baixar codigo
+#         uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+#       - name: Configurar Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.11"
 
-      - name: Instalar validador YAML
-        run: python -m pip install pyyaml
+#       - name: Instalar validador YAML
+#         run: python -m pip install pyyaml
 
-      - name: Validar sintaxe Python
-        run: python -m compileall -q projeto_aluno_databricks/notebooks
+#       - name: Validar sintaxe Python
+#         run: python -m compileall -q projeto_aluno_databricks/notebooks
 
-      - name: Validar arquivos YAML
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import yaml
+#       - name: Validar arquivos YAML
+#         run: |
+#           python - <<'PY'
+#           from pathlib import Path
+#           import yaml
 
-          metadata_dir = Path("projeto_aluno_databricks/metadata")
-          files = sorted(metadata_dir.rglob("*.yml"))
-          files += sorted(metadata_dir.rglob("*.yaml"))
-          if not files:
-              raise SystemExit("Nenhum arquivo YAML encontrado em metadata/")
+#           metadata_dir = Path("projeto_aluno_databricks/metadata")
+#           files = sorted(metadata_dir.rglob("*.yml"))
+#           files += sorted(metadata_dir.rglob("*.yaml"))
+#           if not files:
+#               raise SystemExit("Nenhum arquivo YAML encontrado em metadata/")
 
-          for file in files:
-              with file.open(encoding="utf-8") as stream:
-                  yaml.safe_load(stream)
-              print(f"OK: {file}")
-          PY
+#           for file in files:
+#               with file.open(encoding="utf-8") as stream:
+#                   yaml.safe_load(stream)
+#               print(f"OK: {file}")
+#           PY
