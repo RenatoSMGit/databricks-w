@@ -1,107 +1,107 @@
-# name: Esteira comercial (branch hml)
+name: Esteira comercial (branch hml)
 
-# on:
-#   workflow_dispatch:
-#   push:
-#     branches: [hml]
-#     paths:
-#       - "databricks.yml"
-#       - "projeto_aluno_databricks/workflows/*.yml"
-#       - "projeto_aluno_databricks/notebooks/custom/**/*.py"
-#       - ".github/workflows/esteira_comercial_hml.yml"
+on:
+  workflow_dispatch:
+  push:
+    branches: [hml]
+    paths:
+      - "databricks.yml"
+      - "projeto_aluno_databricks/workflows/*.yml"
+      - "projeto_aluno_databricks/notebooks/custom/**/*.py"
+      - ".github/workflows/esteira_comercial_hml.yml"
 
-# permissions:
-#   contents: read
+permissions:
+  contents: read
 
-# jobs:
-#   validar:
-#     name: "1. Validar Bundle"
-#     runs-on: ubuntu-latest
-#     env:
-#       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-#       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-#     steps:
-#       - name: Baixar codigo
-#         uses: actions/checkout@v4
+jobs:
+  validar:
+    name: "1. Validar Bundle"
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
 
-#       - name: Instalar Databricks CLI
-#         uses: databricks/setup-cli@main
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
 
-#       - name: Validar definicao da esteira
-#         run: databricks bundle validate -t dev
+      - name: Validar definicao da esteira
+        run: databricks bundle validate -t dev
 
-#   publicar:
-#     name: "2. Criar ou atualizar Job"
-#     needs: validar
-#     runs-on: ubuntu-latest
-#     env:
-#       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-#       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-#     steps:
-#       - name: Baixar codigo
-#         uses: actions/checkout@v4
+  publicar:
+    name: "2. Criar ou atualizar Job"
+    needs: validar
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
 
-#       - name: Instalar Databricks CLI
-#         uses: databricks/setup-cli@main
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
 
-#       - name: Publicar definicao do Job
-#         run: databricks bundle deploy -t dev
+      - name: Publicar definicao do Job
+        run: databricks bundle deploy -t dev
 
-#   verificar:
-#     name: "3. Confirmar Job publicado"
-#     needs: publicar
-#     runs-on: ubuntu-latest
-#     env:
-#       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-#       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-#     steps:
-#       - name: Baixar codigo
-#         uses: actions/checkout@v4
+  verificar:
+    name: "3. Confirmar Job publicado"
+    needs: publicar
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
 
-#       - name: Instalar Databricks CLI
-#         uses: databricks/setup-cli@main
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
 
-#       - name: Exibir Job e link do workspace
-#         run: databricks bundle summary -t dev
+      - name: Exibir Job e link do workspace
+        run: databricks bundle summary -t dev
 
-#   executar:
-#     name: "4. Executar esteira comercial"
-#     needs: verificar
-#     runs-on: ubuntu-latest
-#     env:
-#       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-#       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-#     steps:
-#       - name: Baixar codigo
-#         uses: actions/checkout@v4
+  executar:
+    name: "4. Executar esteira comercial"
+    needs: verificar
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
 
-#       - name: Instalar Databricks CLI
-#         uses: databricks/setup-cli@main
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
 
-#       - name: Executar as tasks na ordem da DAG
-#         run: databricks bundle run pipeline_comercial -t dev
+      - name: Executar as tasks na ordem da DAG
+        run: databricks bundle run pipeline_comercial -t dev
 
-#   resumo:
-#     name: "5. Resumo visual"
-#     if: always()
-#     needs: [validar, publicar, verificar, executar]
-#     runs-on: ubuntu-latest
-#     env:
-#       VALIDATE_RESULT: ${{ needs.validar.result }}
-#       DEPLOY_RESULT: ${{ needs.publicar.result }}
-#       VERIFY_RESULT: ${{ needs.verificar.result }}
-#       RUN_RESULT: ${{ needs.executar.result }}
-#     steps:
-#       - name: Mostrar resultado de cada quadrado
-#         run: |
-#           {
-#             echo "## Resultado da esteira comercial"
-#             echo
-#             echo "| Fase | Resultado |"
-#             echo "| --- | --- |"
-#             echo "| Validar definicao | $VALIDATE_RESULT |"
-#             echo "| Criar/atualizar Job | $DEPLOY_RESULT |"
-#             echo "| Validar Job publicado | $VERIFY_RESULT |"
-#             echo "| Executar tasks Databricks | $RUN_RESULT |"
-#           } >> "$GITHUB_STEP_SUMMARY"
-#           test "$RUN_RESULT" = "success"
+  resumo:
+    name: "5. Resumo visual"
+    if: always()
+    needs: [validar, publicar, verificar, executar]
+    runs-on: ubuntu-latest
+    env:
+      VALIDATE_RESULT: ${{ needs.validar.result }}
+      DEPLOY_RESULT: ${{ needs.publicar.result }}
+      VERIFY_RESULT: ${{ needs.verificar.result }}
+      RUN_RESULT: ${{ needs.executar.result }}
+    steps:
+      - name: Mostrar resultado de cada quadrado
+        run: |
+          {
+            echo "## Resultado da esteira comercial"
+            echo
+            echo "| Fase | Resultado |"
+            echo "| --- | --- |"
+            echo "| Validar definicao | $VALIDATE_RESULT |"
+            echo "| Criar/atualizar Job | $DEPLOY_RESULT |"
+            echo "| Validar Job publicado | $VERIFY_RESULT |"
+            echo "| Executar tasks Databricks | $RUN_RESULT |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "$RUN_RESULT" = "success"
