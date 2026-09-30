@@ -7,11 +7,11 @@ pedidos = spark.table('trusted_data_dev.comercial.pedidos')
 
 df = pedidos.groupBy(F.to_date('dt_pedido').alias('dt_venda'), 'id_cliente').agg(
     F.count('id_pedido').alias('qt_pedidos'),
-    F.sum('vl_total').alias('vl_vendas')
+    F.sum('vl_total').cast('decimal(18,2)').alias('vl_vendas')
 )
 
 df = df.withColumn('sk_kpi', F.monotonically_increasing_id())
 
-df.write.mode('merge').format('delta').saveAsTable('refined_data_dev.comercial.kpi_vendas_diarias')
+df.write.mode('overwrite').format('delta').option('overwriteSchema', 'true').saveAsTable('refined_data_dev.comercial.kpi_vendas_diarias')
 
 print('Refined concluído.')

@@ -1,0 +1,24 @@
+# Copy this file to ../<job_name>.yml before deploying.
+resources:
+  jobs:
+    meu_job:
+      name: meu-job-${bundle.target}
+      max_concurrent_runs: 1
+      environments:
+        - environment_key: serverless_default
+          spec:
+            environment_version: "5"
+      tasks:
+        - task_key: primeira_etapa
+          spark_python_task:
+            python_file: ../notebooks/custom/camada/dominio/script.py
+            source: WORKSPACE
+          environment_key: serverless_default
+
+        - task_key: segunda_etapa
+          depends_on:
+            - task_key: primeira_etapa
+          spark_python_task:
+            python_file: ../notebooks/custom/camada/dominio/outro_script.py
+            source: WORKSPACE
+          environment_key: serverless_default

@@ -85,6 +85,10 @@ projeto_aluno_databricks/
 │       └── helpers/
 │           ├── validate_yml.py
 │           └── full_apply.py
+├── workflows/
+│   ├── pipeline_comercial.yml
+│   └── templates/
+│       └── template_job.yml
 ├── sql/
 │   └── consultas_analiticas.sql
 └── data/
@@ -92,6 +96,8 @@ projeto_aluno_databricks/
         └── comercial/
             └── pedidos/
 ```
+
+As definicoes dos Jobs Databricks ficam em `workflows/`. O arquivo `templates/template_job.yml` e um modelo para copiar ao criar outro Job; ele nao e publicado automaticamente pelo Bundle.
 
 ## Ambientes sugeridos
 
